@@ -142,3 +142,34 @@ function log(inputFunction) {
 const f = log((a, b) => a + b);
 f(1, 2); // Logs: Input [1, 2] Output 3
 ```
+## Closure Example
+In Javascript, you can declare functions within other functions and return them. The inner function has access to any variables declared above it.
+```
+function createAdder(a) {
+  return function add(b) {
+    const sum = a + b;
+    return sum;
+  }
+}
+const addTo2 = createAdder(2);
+addTo2(5); // 7
+```
+The inner function add has access to a. This allows the outer function to serve as a factory of new functions, each with different behavior.
+
+## Closures Versus Classes
+You may notice that in the above example createAdder is very similar to a class constructor.
+```
+class Adder {
+  constructor(a) {
+     this.a = a;
+  }
+
+  add(b) {
+    const sum = this.a + b;
+    return sum;
+  }
+}
+const addTo2 = new Adder(2);
+addTo2.add(5); // 7
+```
+Besides differences in syntax, both code examples essentially serve the same purpose. They both allow you to pass in some state in a "constructor" and have "methods" that access this state.
