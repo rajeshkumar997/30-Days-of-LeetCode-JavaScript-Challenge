@@ -211,3 +211,91 @@ Looking at this code, you might wonder "How can you access the greet method even
 The reason is that accessing keys on an object is actually slightly more complicated than just looking at the object's keys. There is actually an algorithm that traverse the prototype chain. First, JavaScript looks at the keys on the object. If the requested key wasn't found, it then looks on the keys of the prototype object. If it still wasn't found, it looks at the prototype's prototype, and so on. This is how inheritance is implemented in JavaScript!
 
 You might also wonder why JavaScript has this strange prototype concept at all. Why not just store the functions on the object itself? The answer is efficiency. Every time a new Person is created, age and name fields are added to the object. However only a single reference to the prototype object is added. So no matter how many instances of Person are created or how many methods are on the class, only a single prototype object is generated.
+
+## Memoization
+To give a concrete example of memoization, here is some code without memoization.
+```
+let callCount = 0;
+const add = (a, b) => {
+  callCount += 1;
+  return a + b;
+}
+
+add(2, 2); // 4
+console.log(callCount); // 1
+add(2, 2); // 4
+console.log(callCount); // 2
+add(2, 2); // 4
+console.log(callCount); // 3
+```
+As expected, callCount is incremented every time add is called.
+
+However if we apply memoization:
+```
+let callCount = 0;
+const add = (a, b) => {
+  callCount += 1;
+  return a + b;
+};
+const memoizedAdd = memoize(add);
+
+memoizedAdd(2, 2); // 4
+console.log(callCount); // 1
+memoizedAdd(2, 2); // 4
+console.log(callCount); // 1
+memoizedAdd(2, 2); // 4
+console.log(callCount); // 1
+```
+We can see that callCount was only incremented the first time memoizedAdd was called. Each subsequent time (2, 2) was passed, the memoization logic detected that those arguments were passed before and it instead immediately returned the cached value (4) without calling add.
+
+Avoiding adding 2 numbers is obviously not much of an optimization, but you could imagine memoizing a more complex function could result in serious performance gains.
+
+## Pure Functions
+It is important to note that memoization only works correctly for pure functions. A pure function is defined as function that always returns the same output given the same inputs and doesn't have any side-effects.
+
+For example, suppose you attempted to memoize the impure function Date.now which returns the current time in milliseconds since the unix epoch.
+```
+const getCurrentTimeMemoized = memoize(Date.now);
+
+getCurrentTimeMemoized(); // 1683784131157
+getCurrentTimeMemoized(); // 1683784131157
+getCurrentTimeMemoized(); // 1683784131157
+```
+getCurrentTimeMemoized correctly returns the current time the first time it is called. But each subsequent time, it incorrectly returns the same value.
+
+Similarly, suppose you have a function with a side-effect like uploading data to a database.
+```
+function uploadRow(row) {
+  // upload logic
+}
+
+const memoizedUpload = memoize(uploadRows);
+memoizedUpload('Some Data'); // successful upload
+memoizedUpload('Some Data'); // nothing happens
+```
+The first time memoizedUpload, data is correctly uploaded to the database, but each subsequent time, nothing will happen.
+
+The fact you can only apply this optimization on pure functions is a good reason to try to make functions pure when possible.
+
+## Memoization Use-cases in Web Development
+There are countless use-cases of memoization but we can discuss a few.
+
+## Caching Website Files
+A large website often consists of many JavaScript files which are dynamically downloaded when a user visits different pages. A pattern is sometimes employed where the filename is based on a hash of the file's content. That way, when the web browser requests a filename that was already requested before, it can load the file locally from disk rather than have to download it again.
+
+## React Components
+React is a highly popular library for building user interfaces, especially for single-page applications. One of its core principles is the idea of breaking down your application into separate components. Each of these components is responsible for rendering a distinct part of the app's HTML.
+
+For example you might have a component like this:
+```
+const TitleComponent = (props) => {
+  return <h1>{props.title}</h1>;
+};
+```
+The above function will get called every time the parent component renders, even if title was not changed. Performance can be improved by calling React.memo on it, avoiding unnecessary renders.
+```
+const TitleComponent = React.memo((props) => {
+  return <h1>{props.title}</h1>;
+});
+```
+Now, TitleComponent will only re-render if the title has changed, thereby improving the performance of the application.
