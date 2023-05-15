@@ -7,7 +7,7 @@ In JavaScript, there are two main ways to declare a function. One of which is to
 
 ## Basic Syntax
 The syntax is:
-```
+```js
 function f(a, b) {
   const sum = a + b;
   return sum;
@@ -18,7 +18,7 @@ In this example, f is the name of the function. (a, b) are the arguments. You ca
 
 ## Anonymous Function
 You can optionally exclude the name of the function after the function keyword.
-```
+```js
 var f = function(a, b) {
   const sum = a + b;
   return sum;
@@ -27,7 +27,7 @@ console.log(f(3, 4)); // 7
 ```
 ## Immediately Invoked Function Expression (IIFE)
 You can create a function and immediately execute it in Javascript.
-```
+```js
 const result = (function(a, b) {
   const sum = a + b;
   return sum;
@@ -38,7 +38,7 @@ Why would you write code like this? It gives you the opportunity to encapsulate 
 
 ## Functions Within Functions
 A powerful feature of JavaScript is you can actually create functions within other functions and even return them!
-```
+```js
 function createFunction() {
   function f(a, b) {
     const sum = a + b;
@@ -53,7 +53,7 @@ In this example, createFunction() returns a new function. Then that function can
 
 ## Function Hoisting
 JavaScript has a feature called hoisting where a function can sometimes be used before it is initialized. You can only do this if you declare functions with the function syntax.
-```
+```js
 function createFunction() {
   return f;
   function f(a, b) {
@@ -68,7 +68,7 @@ In this example, the function is returned before it is initialized. Although it 
 
 ## Closures
 An important topic in JavaScript is the concept of closures. When a function is created, it has access to a reference to all the variables declared around it, also known as it's lexical environment. The combination of the function and its enviroment is called a closure. This is a powerful and often used feature of the language.
-```
+```js
 function createAdder(a) {
   function f(b) {
     const sum = a + b;
@@ -85,7 +85,7 @@ In this example, createAdder passes the first parameter a and the inner function
 The other common way to declare functions is with arrow syntax. In fact, on many projects, it is the preferred syntax.
 
 ##Basic Syntax
-```
+```js
 const f = (a, b) => {
   const sum = a + b;
   return sum;
@@ -96,7 +96,7 @@ In this example, f is the name of the function. (a, b) are the arguments. You ca
 
 ## Omit Return
 If you can write the code in a single line, you can omit the return keyword. This can result in very short code.
-```
+```js
 const f = (a, b) => a + b;
 console.log(f(3, 4)); // 7
 ```
@@ -113,7 +113,7 @@ You can use rest syntax to access all the passed arguments as an array. This isn
 
 ##  Basic Syntax
 The syntax is:
-```
+```js
 function f(...args) {
   const sum = args[0] + args[1];
   return sum;
@@ -130,7 +130,7 @@ In this example the variable args is [3, 4].
 - [ ] By the way, a function that accepts a function and/or returns a function is called a higher-order function, and they are very common in JavaScript.
 
 For example, you can create a logged function factory:
-```
+```js
 function log(inputFunction) {
   return function(...args) {
      console.log("Input", args);
@@ -144,7 +144,7 @@ f(1, 2); // Logs: Input [1, 2] Output 3
 ```
 ## Closure Example
 In Javascript, you can declare functions within other functions and return them. The inner function has access to any variables declared above it.
-```
+```js
 function createAdder(a) {
   return function add(b) {
     const sum = a + b;
@@ -158,7 +158,7 @@ The inner function add has access to a. This allows the outer function to serve 
 
 ## Closures Versus Classes
 You may notice that in the above example createAdder is very similar to a class constructor.
-```
+```js
 class Adder {
   constructor(a) {
      this.a = a;
@@ -176,7 +176,7 @@ Besides differences in syntax, both code examples essentially serve the same pur
 
 ## Classes and Prototypes
 You can also define classes in JavaScript. The classes's constructor returns an object which is an instance of that class.
-```
+```js
 class Person {
   constructor(name, age) {
     this.name = name;
@@ -194,7 +194,7 @@ alice.greet(); // Logs: "My name is Alice"
 JavaScript implements classes with special objects call prototypes. All the methods (in this case greet) are functions stored on the object's prototype.
 
 To make this concrete, the behavior of the above code could be replicated with the following code:
-```
+```js
 const alice = {
   name: "Alice",
   age: 25,
@@ -214,7 +214,7 @@ You might also wonder why JavaScript has this strange prototype concept at all. 
 
 ## Memoization
 To give a concrete example of memoization, here is some code without memoization.
-```
+```js
 let callCount = 0;
 const add = (a, b) => {
   callCount += 1;
@@ -231,7 +231,7 @@ console.log(callCount); // 3
 As expected, callCount is incremented every time add is called.
 
 However if we apply memoization:
-```
+```js
 let callCount = 0;
 const add = (a, b) => {
   callCount += 1;
@@ -254,7 +254,7 @@ Avoiding adding 2 numbers is obviously not much of an optimization, but you coul
 It is important to note that memoization only works correctly for pure functions. A pure function is defined as function that always returns the same output given the same inputs and doesn't have any side-effects.
 
 For example, suppose you attempted to memoize the impure function Date.now which returns the current time in milliseconds since the unix epoch.
-```
+```js
 const getCurrentTimeMemoized = memoize(Date.now);
 
 getCurrentTimeMemoized(); // 1683784131157
@@ -264,7 +264,7 @@ getCurrentTimeMemoized(); // 1683784131157
 getCurrentTimeMemoized correctly returns the current time the first time it is called. But each subsequent time, it incorrectly returns the same value.
 
 Similarly, suppose you have a function with a side-effect like uploading data to a database.
-```
+```js
 function uploadRow(row) {
   // upload logic
 }
@@ -287,13 +287,13 @@ A large website often consists of many JavaScript files which are dynamically do
 React is a highly popular library for building user interfaces, especially for single-page applications. One of its core principles is the idea of breaking down your application into separate components. Each of these components is responsible for rendering a distinct part of the app's HTML.
 
 For example you might have a component like this:
-```
+```js
 const TitleComponent = (props) => {
   return <h1>{props.title}</h1>;
 };
 ```
 The above function will get called every time the parent component renders, even if title was not changed. Performance can be improved by calling React.memo on it, avoiding unnecessary renders.
-```
+```js
 const TitleComponent = React.memo((props) => {
   return <h1>{props.title}</h1>;
 });
@@ -302,7 +302,7 @@ Now, TitleComponent will only re-render if the title has changed, thereby improv
 
 ## Promise in javascript
 A promise in JavaScript is an object representing the eventual completion or failure of an asynchronous operation. Essentially, it's a returned object to which you attach callbacks, as opposed to passing callbacks into a function.
-```
+```js
 let promise = new Promise((resolve, reject) => {
     let condition = true;  // This could be the result of some operation
 
@@ -341,7 +341,7 @@ Async/await can be seen as syntax sugar on top of promises, making asynchronous 
 By employing await, we can eliminate the need for explicit .then() and .catch() chains that are typically used with promises. Instead, we can structure our code in a more linear and synchronous-looking manner. This makes it easier to reason about the flow of the program and handle errors in a more concise way.
 
 Example:
-```
+```js
 // Using explicit .then() and .catch() with promises
 fetchData()
   .then(response => {
@@ -381,7 +381,7 @@ Under the hood, the await keyword halts the execution of the function, allowing 
 
 ## Promise Chaining
 Promise chaining is a technique in JavaScript that allows you to perform multiple asynchronous operations in a sequence, with each operation starting when the previous one has completed. The primary advantage of promise chaining is that it allows you to avoid the "callback hell" or "pyramid of doom" that can result from using nested callbacks to handle asynchronous code. Instead, you can write asynchronous code that almost looks like synchronous code, making it much easier to understand and maintain. Each then in a promise chain receives the result of the previous promise's resolution. This result can be used to inform the next step in the chain. If a promise in the chain is rejected, the chain's subsequent then methods will be skipped until a catch method is found.
-```
+```js
 fetchData()
   .then(response => {
     console.log("Response:", response);
