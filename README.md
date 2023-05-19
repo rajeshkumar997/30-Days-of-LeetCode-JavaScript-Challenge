@@ -399,3 +399,37 @@ fetchData()
   });
   ```
 fetchData, processData, and furtherProcessing are all asynchronous functions that return promises. The then methods are chained together, with each one waiting for the previous promise to resolve before starting its operation. If any promise in the chain is rejected, the catch method at the end will be invoked to handle the error.
+
+## Debouncing
+This question asks you to implement the debounce higher-order function. After the debounced function is called, the provided function should be called with the same arguments but with some delay t. However, if the debounced function was called again before t milliseconds have elapsed, the execution of the provided function should be cancelled and the timer reset.
+
+To give a concrete example of debounce in action:
+```js
+const start = Date.now();
+function log() {
+  console.log(Date.now() - start);
+}
+
+setTimeout(log, 10); // logs: 10
+setTimeout(log, 20); // logs: 20
+setTimeout(log, 50); // logs: 50
+setTimeout(log, 60); // logs: 60
+```
+As expected, the log function is called with the delay specified by setTimeout.
+
+However, if we debounce the log function:
+```js
+const start = Date.now();
+function log() {
+  console.log(Date.now() - start);
+}
+const debouncedLog = debounce(log, 20);
+
+setTimeout(debouncedLog, 10); // cancelled
+setTimeout(debouncedLog, 20); // logs: 40
+setTimeout(debouncedLog, 50); // cancelled
+setTimeout(debouncedLog, 60); // logs: 80
+```
+In the above example, the function call at t=10ms is cancelled because the call at t=20ms happened within 20ms. The call at t=20ms was delayed by 20ms.
+
+Similarly, the function call at t=50ms is cancelled because the call at t=60ms happened within 20ms. The call at t=60ms was delayed by 20ms.
